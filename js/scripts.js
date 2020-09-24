@@ -17,6 +17,9 @@ fetch('https://randomuser.me/api/?results=12')
 
 
 function generateGallery(results){
+    gallery.innerHTML = '';
+
+
     for (let i = 0; i< results.length;i++){
         const html = `
         <div class="card">
@@ -36,6 +39,10 @@ function generateGallery(results){
 
 
 function generateModal(i){
+    if(document.querySelector('.modal-container')){
+        document.querySelector('.modal-container').parentNode.removeChild(document.querySelector('.modal-container'));
+    }
+
     const index = i;
     const html = `
     <div class="modal-container">
@@ -107,9 +114,29 @@ function generateSearch(){
 }
 generateSearch();
 
+function runSearch(){
+    let filteredObjects = [];
+    let names = [];
+    const searchValue = document.getElementById('search-input').value;
+    for (let i = 0;i<objects.length;i++){
+        let name = `${objects[i].name.first} ${objects[i].name.last}`
+        name = name.toLowerCase();
+        names.push(name);
+    }
 
-search.addEventListener('keydown', {
-    
+    for(let i = 0; i < names.length; i++){
+        if(names[i].includes(searchValue)){
+            filteredObjects.push(objects[i])
+        }
+    }
+        
+    console.log(filteredObjects);
+    generateGallery(filteredObjects);
+}
+
+
+search.addEventListener('keyup', (e) => {
+    runSearch();
 })
 
 gallery.addEventListener('click', (e) => {
