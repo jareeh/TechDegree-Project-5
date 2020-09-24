@@ -36,6 +36,7 @@ function generateGallery(results){
 
 
 function generateModal(i){
+    const index = i;
     const html = `
     <div class="modal-container">
         <div class="modal">
@@ -57,21 +58,42 @@ function generateModal(i){
         </div>
     </div>
     `
-
+    //add/show the modal
     gallery.insertAdjacentHTML('afterend', html)
+
+    //deal with visibility of prev/next
+    const prev = document.getElementById('modal-prev');
+    const next = document.getElementById('modal-next');
+    if(index === 0){
+        prev.style.display = 'none';
+    }
+    if(index === objects.length - 1){
+        next.style.display = 'none';
+    }
 
     //event listener for close button
     document.getElementById('modal-close-btn').addEventListener('click', () => {
         document.querySelector('.modal-container').hidden = true;
+        
     })
 
     //event listener for next button
-    document.getElementById('modal-next').addEventListener('click', () => {
+    next.addEventListener('click', () => {
         document.querySelector('.modal-container').hidden = true;
-        
+        if(!(index >= objects.length - 1)){
+            generateModal(index+1);
+        }
+
     })
     //event listener for prev button
+    prev.addEventListener('click', () => {
+        document.querySelector('.modal-container').hidden = true;    
+        if(index>0){
+            generateModal(index-1);
+        }
+    })
 }
+
 
 
 function generateSearch(){
