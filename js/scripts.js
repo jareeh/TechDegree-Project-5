@@ -1,12 +1,15 @@
 const gallery = document.getElementById('gallery');
 const search = document.querySelector('.search-container');
-
+let objects = [];
 
 fetch('https://randomuser.me/api/?results=12')
     .then(res => res.json())
     .then(res => {
-        console.log(res.results)
         generateGallery(res.results)
+        for (let i = 0; i< res.results.length;i++){
+            objects.push(res.results[i]);
+        }
+        console.log(objects);
     })
     .catch(error => console.log('there was an error retrieving the users', error))
 
@@ -32,20 +35,20 @@ function generateGallery(results){
 }
 
 
-function generateModal(){
+function generateModal(i){
     const html = `
     <div class="modal-container">
         <div class="modal">
             <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
             <div class="modal-info-container">
-                <img class="modal-img" src="${object.picture.medium}" alt="profile picture">
-                <h3 id="name" class="modal-name cap">${object.name.first} ${object.name.last}</h3>
-                <p class="modal-text">${object.email}</p>
-                <p class="modal-text cap">${object.location.city}</p>
+                <img class="modal-img" src="${objects[i].picture.medium}" alt="profile picture">
+                <h3 id="name" class="modal-name cap">${objects[i].name.first} ${objects[i].name.last}</h3>
+                <p class="modal-text">${objects[i].email}</p>
+                <p class="modal-text cap">${objects[i].location.city}</p>
                 <hr>
-                <p class="modal-text">${object.cell}</p>
-                <p class="modal-text">${object.location.street.number} ${object.location.street.name}, ${object.location.city}, ${object.location.state} ${object.location.postcode}</p>
-                <p class="modal-text">Birthday: ${object.dob.date.substr(4, 6)}/${object.dob.date.substr(8, 10)}/${object.dob.date.substr(0, 4)}</p>
+                <p class="modal-text">${objects[i].cell}</p>
+                <p class="modal-text">${objects[i].location.street.number} ${objects[i].location.street.name}, ${objects[i].location.city}, ${objects[i].location.state} ${objects[i].location.postcode}</p>
+                <p class="modal-text">Birthday: ${objects[i].dob.date.substr(5, 2)}/${objects[i].dob.date.substr(8, 2)}/${objects[i].dob.date.substr(0, 4)}</p>
             </div>
         </div>
         <div class="modal-btn-container">
@@ -54,34 +57,22 @@ function generateModal(){
         </div>
     </div>
     `
-    
-    
-    //
+
+    gallery.insertAdjacentHTML('afterend', html)
+
+    //event listener for close button
+    document.getElementById('modal-close-btn').addEventListener('click', () => {
+        document.querySelector('.modal-container').hidden = true;
+    })
+
+    //event listener for next button
+    document.getElementById('modal-next').addEventListener('click', () => {
+        document.querySelector('.modal-container').hidden = true;
+        
+    })
+    //event listener for prev button
 }
 
-
-/* 
-
-<div class="modal-container">
-    <div class="modal">
-        <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
-        <div class="modal-info-container">
-            <img class="modal-img" src="https://placehold.it/125x125" alt="profile picture">
-            <h3 id="name" class="modal-name cap">name</h3>
-            <p class="modal-text">email</p>
-            <p class="modal-text cap">city</p>
-            <hr>
-            <p class="modal-text">${object.cell}</p>
-            <p class="modal-text">123 Portland Ave., Portland, OR 97204</p>
-            <p class="modal-text">Birthday: 10/21/2015</p>
-        /div>
-    </div>
-    <div class="modal-btn-container">
-        <button type="button" id="modal-prev" class="modal-prev btn">Prev</button>
-        <button type="button" id="modal-next" class="modal-next btn">Next</button>
-    </div>
-</div>
-*/ 
 
 function generateSearch(){
     const html = `
@@ -95,9 +86,18 @@ function generateSearch(){
 generateSearch();
 
 
+search.addEventListener('keydown', {
+    
+})
+
 gallery.addEventListener('click', (e) => {
-    console.log(e.target);
-    if(e.target.className === 'card'){
-        console.log('You clicked the card!')
+    const card = e.target.closest('.card');
+    const name = card.querySelector('.card-name').textContent;
+    console.log(name.split(' ')[0])
+
+    for (i=0;i<objects.length;i++){
+        if(name.split(' ')[0] === objects[i].name.first && name.split(' ')[1] === objects[i].name.last){
+            generateModal(i);
+        }
     }
 })
