@@ -3,7 +3,9 @@ const search = document.querySelector('.search-container');
 let objects = [];
 let filteredObjects = [];
 
-
+//Get the data from the API, call JSON on it, and push it to the objects array
+//Create another array for filtering and searching using map function
+//Errors will be caught and logged to console
 fetch('https://randomuser.me/api/?results=12')
     .then(res => res.json())
     .then(res => {
@@ -11,17 +13,21 @@ fetch('https://randomuser.me/api/?results=12')
         for (let i = 0; i< res.results.length;i++){
             objects.push(res.results[i]);
         }
-        console.log(objects);
         filteredObjects = objects.map(x => x);
     })
     .catch(error => console.log('there was an error retrieving the users', error))
 
 
 
-
+/**
+ * Generates directory for length of array of profiles passed in.
+ *
+ * @param {array} results The array to create DOM cards from.
+ */
 function generateGallery(results){
+    //Set the innerHTML gallery to nothing every time it's called, for maximum compatibility with search function
+    //Contrary to project notes, this is okay, because I set up the event listener on the gallery itself, and used event bubbling
     gallery.innerHTML = '';
-
 
     for (let i = 0; i< results.length;i++){
         const html = `
@@ -40,14 +46,17 @@ function generateGallery(results){
     }
 }
 
-
+/**
+ * Generates modal for profile passed in.
+ *
+ * @param {number} i The index of the profile to create DOM modal from.
+ */
 function generateModal(i){
     //remove modal if it's already there to prevent a ton of hidden HTML elements
     if(document.querySelector('.modal-container')){
         document.querySelector('.modal-container').parentNode.removeChild(document.querySelector('.modal-container'));
     }
 
-    const index = i;
     const html = `
     <div class="modal-container">
         <div class="modal">
@@ -69,16 +78,30 @@ function generateModal(i){
         </div>
     </div>
     `
-    //add/show the modal
+    //add the modal
     gallery.insertAdjacentHTML('afterend', html)
 
-    //deal with visibility of prev/next
+    //call handler function for prev/next buttons
+    prevNextHandler(i);
+}
+
+
+/**
+ * Helper function for generateModal
+ * Handles the functionality/visibility of the previous and next buttons on modal
+ *
+ * @param {number} i The index of the profile to create DOM modal from passed through from generateModal.
+ */
+function prevNextHandler(i){
+    //shortcut to prev/next buttons
     const prev = document.getElementById('modal-prev');
     const next = document.getElementById('modal-next');
-    if(index === 0){
+
+    //deal with visibility of prev/next
+    if(i === 0){
         prev.style.display = 'none';
     }
-    if(index === filteredObjects.length - 1){
+    if(i === filteredObjects.length - 1){
         next.style.display = 'none';
     }
 
@@ -91,22 +114,25 @@ function generateModal(i){
     //event listener for next button
     next.addEventListener('click', () => {
         document.querySelector('.modal-container').hidden = true;
-        if(!(index >= filteredObjects.length - 1)){
-            generateModal(index+1);
+        if(!(i >= filteredObjects.length - 1)){
+            generateModal(i+1);
         }
 
     })
     //event listener for prev button
     prev.addEventListener('click', () => {
         document.querySelector('.modal-container').hidden = true;    
-        if(index>0){
-            generateModal(index-1);
+        if(i>0){
+            generateModal(i-1);
         }
     })
 }
 
 
 
+/**
+ * Generates search HTML and adds it to search container.
+ */
 function generateSearch(){
     const html = `
     <form action="#" method="get">
@@ -118,6 +144,13 @@ function generateSearch(){
 }
 generateSearch();
 
+
+
+/**
+ * Search controller function
+ * - Resets filteredObjects array when called
+ * - Adds objects to it whose names include search input value
+ */
 function runSearch(){
     filteredObjects = [];
     let names = [];
@@ -134,19 +167,27 @@ function runSearch(){
         }
     }
         
-    console.log(filteredObjects);
     generateGallery(filteredObjects);
 }
 
 
+
+//Event listener for search
+//used 'keyup' to have a more responsive search experience
 search.addEventListener('keyup', (e) => {
     runSearch();
 })
 
+
+
+
+//Event listener for modal generation
 gallery.addEventListener('click', (e) => {
     const card = e.target.closest('.card');
     const name = card.querySelector('.card-name').textContent;
 
+    //for the updated filteredObjects array
+        //if the first name and last name of the card equal the first and last name of the object, generate the modal for that object
     for (i=0;i<filteredObjects.length;i++){
         if(name.split(' ')[0] === filteredObjects[i].name.first && name.split(' ')[1] === filteredObjects[i].name.last){
             generateModal(i);
