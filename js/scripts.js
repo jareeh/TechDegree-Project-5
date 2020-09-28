@@ -15,7 +15,7 @@ fetch('https://randomuser.me/api/?results=12')
         }
         filteredObjects = objects.map(x => x);
     })
-    .catch(error => console.log('there was an error retrieving the users', error))
+    .catch(error => console.log('There was an error retrieving the profiles.', error))
 
 
 
@@ -26,7 +26,7 @@ fetch('https://randomuser.me/api/?results=12')
  */
 function generateGallery(results){
     //Set the innerHTML gallery to nothing every time it's called, for maximum compatibility with search function
-    //Contrary to project notes, this is okay, because I set up the event listener on the gallery itself, and used event bubbling
+    //Contrary to project notes, this is okay, because I set up the event listener on the gallery itself, taking advantage of event bubbling
     gallery.innerHTML = '';
 
     for (let i = 0; i< results.length;i++){
@@ -46,10 +46,12 @@ function generateGallery(results){
     }
 }
 
+
+
 /**
  * Generates modal for profile passed in.
  *
- * @param {number} i The index of the profile to create DOM modal from.
+ * @param {number} i The index of the profile to create DOM modal from filteredObjects array.
  */
 function generateModal(i){
     //remove modal if it's already there to prevent a ton of hidden HTML elements
@@ -86,6 +88,7 @@ function generateModal(i){
 }
 
 
+
 /**
  * Helper function for generateModal
  * Handles the functionality/visibility of the previous and next buttons on modal
@@ -103,6 +106,12 @@ function prevNextHandler(i){
     }
     if(i === filteredObjects.length - 1){
         next.style.display = 'none';
+    }
+
+    //if both of the above conditions are met, then there is only one object
+    //and we can hide the entire button container to make the modal look cleaner
+    if(i === 0 && i === (filteredObjects.length -1)){
+        document.querySelector('.modal-btn-container').style.display = 'none';
     }
 
     //event listener for close button
@@ -177,7 +186,6 @@ function runSearch(){
 search.addEventListener('keyup', (e) => {
     runSearch();
 })
-
 
 
 
