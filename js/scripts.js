@@ -187,6 +187,11 @@ search.addEventListener('keyup', (e) => {
     runSearch();
 })
 
+//Event listener for search
+//Calls same function on pressing search button as above
+document.querySelector('form').addEventListener('submit', () => {
+    runSearch();
+})
 
 
 //Event listener for modal generation
@@ -197,7 +202,8 @@ gallery.addEventListener('click', (e) => {
     //for the updated filteredObjects array
         //if the first name and last name of the card equal the first and last name of the object, generate the modal for that object
     for (i=0;i<filteredObjects.length;i++){
-        if(name.split(' ')[0] === filteredObjects[i].name.first && name.split(' ')[1] === filteredObjects[i].name.last){
+        if(name.split(' ')[0] === filteredObjects[i].name.first && 
+           name.split(' ')[1] === filteredObjects[i].name.last){
             generateModal(i);
         }
     }
